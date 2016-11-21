@@ -9,7 +9,14 @@ namespace Teva.Common.Data.Gremlin.GraphItems
 {
     public abstract class GraphItem
     {
+        private string Id;
         [JsonProperty("id")]
-        public string ID { get; set; }
+        public GraphItemId id { get; set; }
+
+        public string ID
+        {
+            get { return id.ToString(); }
+            set { Id = value; }
+        }
     }
 }

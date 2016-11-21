@@ -1,22 +1,21 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
-namespace Teva.Common.Data.Gremlin
+namespace Teva.Common.Data.Gremlin.Impl
 {
-    public class GremlinServerClient
+    public class GremlinServerClient : IGremlinServerClient
     {
-        public GremlinServerClient(string Host = "localhost", int Port = 8182, bool UseBinary = true, int ReadBufferSize = 1024, string Username = null, string Password = null)
+        public GremlinServerClient(string Host = "localhost", string postfix = "/gremlin", int Port = 8182, bool UseBinary = true, int ReadBufferSize = 1024, string Username = null, string Password = null)
         {
             this.Host = Host;
             this.Port = Port;
             this.UseBinary = UseBinary;
             this.ReadBufferSize = ReadBufferSize;
-            this.Uri = new Uri("ws://" + Host + ":" + Port);
+            this.Uri = new Uri("ws://" + Host + ":" + Port + postfix);
             this.Username = Username;
             this.Password = Password;
         }

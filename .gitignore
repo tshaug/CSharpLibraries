@@ -227,3 +227,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+/Teva.Common.Data.Gremlin/src/.vs
+/Teva.Common.Data.Gremlin/src/packages
+/Teva.Common.Data.Gremlin/src/bin

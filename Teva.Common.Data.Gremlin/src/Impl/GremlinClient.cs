@@ -1,20 +1,18 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
-namespace Teva.Common.Data.Gremlin
+namespace Teva.Common.Data.Gremlin.Impl
 {
-    public class GremlinClient
+    public class GremlinClient : IGremlinClient
     {
-        public GremlinClient(string Host, int Port = 8182, string Username = null, string Password = null)
+        public GremlinClient(string Host, string postfix= "/gremlin", int Port = 8182, string Username = null, string Password = null)
         {
             this.Host = Host;
             this.Port = Port;
-            this.Client = new GremlinServerClient(Host, Port, Username: Username, Password: Password);
+            this.Client = new GremlinServerClient(Host, postfix, Port, Username: Username, Password: Password);
         }
 
         #region VertexExists
