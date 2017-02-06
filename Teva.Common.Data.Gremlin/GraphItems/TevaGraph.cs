@@ -39,13 +39,8 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         public Edge AddDirectedEdge(string label, Vertex OutVertex, Vertex InVertex, EdgeProperties Properties = null)
         {
             Edge tmpEdge = new Edge();
-            if (label == "Vertex" || label == "Edge")
-            {
-                label = label + "Object";
-            }
             tmpEdge.Label = label;
-            tmpEdge.id = new GraphItemId();
-            tmpEdge.id.saveId(localId.ToString());
+            tmpEdge.ID = localId.ToString();
             localId++;
             tmpEdge.InVertexLabel = InVertex.Label;
             tmpEdge.OutVertexLabel = OutVertex.Label;
@@ -105,13 +100,8 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         public Vertex AddVertex(string label, VertexProperties properties = null)
         {
             Vertex tmpVertex = new Vertex();
-            if (label == "Vertex" || label == "Edge")
-            {
-                label = label + "Object";
-            }
             tmpVertex.Label = label;
-            tmpVertex.id = new GraphItemId();
-            tmpVertex.id.saveId(localId.ToString());
+            tmpVertex.ID = localId.ToString();
             localId++;
             tmpVertex.Properties = properties;
 
