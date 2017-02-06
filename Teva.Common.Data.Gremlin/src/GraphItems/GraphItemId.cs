@@ -23,8 +23,16 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         public void saveId(string rid)
         {
             string[] ids = rid.Split(':');
-            clusterId = ids[0];
-            clusterPosition = ids[1];
+            if (ids.Length == 2)
+            {
+                clusterId = ids[0];
+                clusterPosition = ids[1];
+            }
+            else
+            {
+                clusterId = ids[0];
+                clusterPosition = "0";
+            }
         }
     }
 }
