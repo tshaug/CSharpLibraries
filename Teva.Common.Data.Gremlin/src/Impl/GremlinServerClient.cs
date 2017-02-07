@@ -4,11 +4,13 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using log4net;
 
 namespace Teva.Common.Data.Gremlin.Impl
 {
     public class GremlinServerClient : IGremlinServerClient
     {
+        private static readonly ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public GremlinServerClient(string Host = "localhost", string postfix = "/gremlin", int Port = 8182, bool UseBinary = true, int ReadBufferSize = 1024, string Username = null, string Password = null)
         {
             this.Host = Host;
@@ -100,14 +102,17 @@ namespace Teva.Common.Data.Gremlin.Impl
                 {
                     case 200: // SUCCESS
                     case 204: // NO CONTENT
+                        logger.Info("HTTP 204 NO CONTENT");
                         if (ToReturn == null)
                             ToReturn = new List<ResultDataType>();
                         return ToReturn;
                     case 206: // PARTIAL CONTENT
                         continue;
                     case 401:
+                        logger.Error("HTTP 401 UNAUTHORIZED");
                         throw new Exceptions.UnauthorizedException(Response.Status.Message);
                     case 407: // AUTHENTICATE
+                        logger.Error("HTTP 407 Proxy Authentication Required");
                         if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))
                             throw new Exceptions.UnauthorizedException(Response.Status.Message);
 
@@ -119,16 +124,22 @@ namespace Teva.Common.Data.Gremlin.Impl
 
                         break;
                     case 498:
+                        logger.Error("Malformed Request: " + Response.Status.Message);
                         throw new Exceptions.MalformedRequestException(Response.Status.Message);
                     case 499:
+                        logger.Error("Invalid Request Arguments: " + Response.Status.Message);
                         throw new Exceptions.InvalidRequestArgumentsException(Response.Status.Message);
                     case 500:
+                        logger.Error("HTTP 500 Server Error");
                         throw new Exceptions.ServerErrorException(Response.Status.Message);
                     case 597:
+                        logger.Error("Script Evaluation Error. Maybe false Gremlin Statement?");
                         throw new Exceptions.ScriptEvaluationErrorException(Response.Status.Message);
                     case 598:
+                        logger.Error("Server Timeout Exception");
                         throw new Exceptions.ServerTimeoutException(Response.Status.Message);
                     case 599:
+                        logger.Error("Server Serialization Error");
                         throw new Exceptions.ServerSerializationError(Response.Status.Message);
                     default:
                         throw new Exception("Unsupported StatusCode (" + Response.Status.Code + "): " + Response.Status.Message);
@@ -208,11 +219,15 @@ namespace Teva.Common.Data.Gremlin.Impl
                 switch (Response.Status.Code)
                 {
                     case 200: // SUCCESS
+
                     case 204: // NO CONTENT
+                        logger.Info("HTTP 204 NO CONTENT");
                         return default(ResultDataType);
                     case 401:
+                        logger.Error("HTTP 401 UNAUTHORIZED");
                         throw new Exceptions.UnauthorizedException(Response.Status.Message);
                     case 407: // AUTHENTICATE
+                        logger.Error("HTTP 407 Proxy Authentication Required");
                         if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))
                             throw new Exceptions.UnauthorizedException(Response.Status.Message);
 
@@ -224,16 +239,22 @@ namespace Teva.Common.Data.Gremlin.Impl
 
                         break;
                     case 498:
+                        logger.Error("Malformed Request: " + Response.Status.Message);
                         throw new Exceptions.MalformedRequestException(Response.Status.Message);
                     case 499:
+                        logger.Error("Invalid Request Arguments: " + Response.Status.Message);
                         throw new Exceptions.InvalidRequestArgumentsException(Response.Status.Message);
                     case 500:
+                        logger.Error("HTTP 500 Server Error");
                         throw new Exceptions.ServerErrorException(Response.Status.Message);
                     case 597:
+                        logger.Error("Script Evaluation Error. Maybe false Gremlin Statement? " + Response.Status.Message);
                         throw new Exceptions.ScriptEvaluationErrorException(Response.Status.Message);
                     case 598:
+                        logger.Error("Server Timeout Exception: " + Response.Status.Message);
                         throw new Exceptions.ServerTimeoutException(Response.Status.Message);
                     case 599:
+                        logger.Error("Server Serialization Error: " + Response.Status.Message);
                         throw new Exceptions.ServerSerializationError(Response.Status.Message);
                     default:
                         throw new Exception("Unsupported StatusCode (" + Response.Status.Code + "): " + Response.Status.Message);
