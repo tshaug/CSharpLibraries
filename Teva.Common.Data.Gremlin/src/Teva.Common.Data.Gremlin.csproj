@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\NotSupportedDatabaseException.cs" />
     <Compile Include="Exceptions\UnauthorizedException.cs" />
     <Compile Include="Exceptions\ServerSerializationError.cs" />
     <Compile Include="Exceptions\ServerTimeoutException.cs" />
@@ -64,16 +65,33 @@
     <Compile Include="Exceptions\ServerErrorException.cs" />
     <Compile Include="Exceptions\InvalidRequestArgumentsException.cs" />
     <Compile Include="Exceptions\MalformedRequestException.cs" />
-    <Compile Include="GraphItems\Edge.cs" />
-    <Compile Include="GraphItems\EdgeProperties.cs" />
-    <Compile Include="GraphItems\GraphItemId.cs" />
-    <Compile Include="GraphItems\TevaGraph.cs" />
-    <Compile Include="GraphItems\VertexProperties.cs" />
-    <Compile Include="GraphItems\GraphItem.cs" />
+    <Compile Include="GraphItems\IEdge.cs" />
+    <Compile Include="GraphItems\IEdgeProperties.cs" />
+    <Compile Include="GraphItems\IGraph.cs" />
+    <Compile Include="GraphItems\IGraphItem.cs" />
+    <Compile Include="GraphItems\IVertex.cs" />
+    <Compile Include="GraphItems\IVertexProperties.cs" />
+    <Compile Include="GraphItems\IVertexValue.cs" />
+    <Compile Include="GraphItems\Orient\OrientEdge.cs" />
+    <Compile Include="GraphItems\Orient\OrientEdgeProperties.cs" />
+    <Compile Include="GraphItems\Orient\OrientGraph.cs" />
+    <Compile Include="GraphItems\Orient\OrientGraphItem.cs" />
+    <Compile Include="GraphItems\Orient\OrientGraphItemId.cs" />
+    <Compile Include="GraphItems\Orient\OrientVertex.cs" />
+    <Compile Include="GraphItems\Orient\OrientVertexProperties.cs" />
+    <Compile Include="GraphItems\Orient\OrientVertexValue.cs" />
+    <Compile Include="GraphItems\Titan\TitanEdge.cs" />
+    <Compile Include="GraphItems\Titan\TitanEdgeProperties.cs" />
+    <Compile Include="GraphItems\Titan\TitanGraph.cs" />
+    <Compile Include="GraphItems\Titan\TitanGraphItem.cs" />
+    <Compile Include="GraphItems\Titan\TitanVertex.cs" />
+    <Compile Include="GraphItems\Titan\TitanVertexProperties.cs" />
+    <Compile Include="GraphItems\Titan\TitanVertexValue.cs" />
     <Compile Include="Impl\GremlinServerClient.cs" />
     <Compile Include="Impl\GremlinScript.cs" />
     <Compile Include="IGremlinClient.cs" />
     <Compile Include="IGremlinServerClient.cs" />
+    <Compile Include="Impl\JsonGraphItemConverter.cs" />
     <Compile Include="Messages\AuthenticationRequestMessage.cs" />
     <Compile Include="Messages\AuthenticationRequestArguments.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -83,8 +101,6 @@
     <Compile Include="Messages\ScriptResponse.cs" />
     <Compile Include="Messages\ScriptResponseResult.cs" />
     <Compile Include="Messages\ScriptResponseStatus.cs" />
-    <Compile Include="GraphItems\VertexValue.cs" />
-    <Compile Include="GraphItems\Vertex.cs" />
     <Compile Include="Impl\GremlinClient.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +108,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

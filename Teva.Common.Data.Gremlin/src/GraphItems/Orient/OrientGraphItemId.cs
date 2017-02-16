@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace Teva.Common.Data.Gremlin.GraphItems
+namespace Teva.Common.Data.Gremlin.GraphItems.Orient
 {
-    public class GraphItemId
+    public class OrientGraphItemId
     {
         [JsonProperty("clusterId")]
         public string clusterId { get; set; }
@@ -23,15 +18,15 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         public void saveId(string rid)
         {
             string[] ids = rid.Split(':');
-            if (ids.Length == 2)
+            if (ids.Length < 2)
             {
                 clusterId = ids[0];
-                clusterPosition = ids[1];
+                clusterPosition = "0";                
             }
             else
             {
                 clusterId = ids[0];
-                clusterPosition = "0";
+                clusterPosition = ids[1];
             }
         }
     }

@@ -1,13 +1,12 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Teva.Common.Data.Gremlin.GraphItems
+namespace Teva.Common.Data.Gremlin.GraphItems.Orient
 {
-    public class EdgeProperties : Dictionary<string, object>
+    public class OrientVertexProperties : Dictionary<string, List<IVertexValue>>, IVertexProperties
     {
         public void SetProperty<T>(string Key, T Value, bool IgnoreDefaultValue = true)
         {
@@ -17,14 +16,14 @@ namespace Teva.Common.Data.Gremlin.GraphItems
             if (Value == null || (IgnoreDefaultValue && EqualityComparer<T>.Default.Equals(Value, default(T))))
                 base.Remove(Key);
             else
-                base[Key] = Value;
+                base[Key] = new List<IVertexValue> { new OrientVertexValue(Value) };
         }
         public void SetProperty<T>(string Key, string Value, bool IgnoreDefaultValue = true)
         {
             if (Value == null || (IgnoreDefaultValue && Value.Length == 0))
                 base.Remove(Key);
             else
-                base[Key] = Value;
+                base[Key] = new List<IVertexValue> { new OrientVertexValue(Value) };
         }
         public void RemoveProperty(string Key)
         {
@@ -35,21 +34,21 @@ namespace Teva.Common.Data.Gremlin.GraphItems
             if (!base.ContainsKey(Key))
                 return null;
 
-            return base[Key];
+            return base[Key][0].Contents;
         }
         public T GetProperty<T>(string Key)
         {
             if (!base.ContainsKey(Key))
                 return default(T);
 
-            return (T)base[Key];
+            return (T)base[Key][0].Contents;
         }
         public T GetProperty<T>(string Key, T DefaultValue)
         {
             if (!base.ContainsKey(Key))
                 return DefaultValue;
 
-            return (T)base[Key];
+            return (T)base[Key][0].Contents;
         }
         public bool HasProperty(string Key)
         {

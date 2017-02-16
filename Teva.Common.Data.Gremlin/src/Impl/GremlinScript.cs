@@ -195,7 +195,7 @@ namespace Teva.Common.Data.Gremlin
             }
             return this;
         }
-        public GremlinScript Append_PropertiesArrayString(Dictionary<string, List<GraphItems.VertexValue>> Properties, bool AddCommaOnFirstItem = false)
+        public GremlinScript Append_PropertiesArrayString(Dictionary<string, List<GraphItems.IVertexValue>> Properties, bool AddCommaOnFirstItem = false)
         {
             if (Properties == null)
                 return this;
@@ -422,29 +422,29 @@ namespace Teva.Common.Data.Gremlin
         #endregion
 
         #region CreateVertex
-        public GremlinScript Append_CreateVertex(Dictionary<string, List<GraphItems.VertexValue>> Properties)
+        public GremlinScript Append_CreateVertex(Dictionary<string, List<GraphItems.IVertexValue>> Properties)
         {
             return Append("g.addV(").Append_PropertiesArrayString(Properties).Append(")").Append_Next();
         }
-        public GremlinScript Append_CreateVertexWithLabel(string Label, Dictionary<string, List<GraphItems.VertexValue>> Properties)
+        public GremlinScript Append_CreateVertexWithLabel(string Label, Dictionary<string, List<GraphItems.IVertexValue>> Properties)
         {
             return Append("g.addV(T.label,").Append_Parameter(Label).Append(",").Append_PropertiesArrayString(Properties).Append(")").Append_Next();
         }
         #endregion
 
         #region GetOrCreateVertex
-        public GremlinScript Append_GetOrCreateVertex(string IndexName, object ID, Dictionary<string, List<GraphItems.VertexValue>> Properties)
+        public GremlinScript Append_GetOrCreateVertex(string IndexName, object ID, Dictionary<string, List<GraphItems.IVertexValue>> Properties)
         {
             return Append_GetVerticesByIndex(IndexName, ID).Append_TryNext().Append(".orElseGet({").Append_CreateVertex(Properties).Append("})");
         }
-        public GremlinScript Append_GetOrCreateVertexWithLabel(string Label, string IndexName, object ID, Dictionary<string, List<GraphItems.VertexValue>> Properties)
+        public GremlinScript Append_GetOrCreateVertexWithLabel(string Label, string IndexName, object ID, Dictionary<string, List<GraphItems.IVertexValue>> Properties)
         {
             return Append_GetVerticesByIndexAndLabel(Label, IndexName, ID).Append_TryNext().Append(".orElseGet({").Append_CreateVertexWithLabel(Label, Properties).Append("})");
         }
         #endregion
 
         #region UpdateVertex
-        public GremlinScript Append_UpdateVertex(string ID, Dictionary<string, List<GraphItems.VertexValue>> Properties, bool RemoveOtherProperties)
+        public GremlinScript Append_UpdateVertex(string ID, Dictionary<string, List<GraphItems.IVertexValue>> Properties, bool RemoveOtherProperties)
         {
             string VariableName = GetNextVariableName();
             Append("def " + VariableName + "=").Append_GetVertex(ID).Append_Next().Append(";");

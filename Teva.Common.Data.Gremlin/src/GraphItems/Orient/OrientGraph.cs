@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using Teva.Common.Data.Gremlin.GraphItems.Orient;
 using Newtonsoft.Json;
 using System.Net.WebSockets;
 using log4net;
 
 namespace Teva.Common.Data.Gremlin.GraphItems
 {
-    public class TevaGraph
+    public class OrientGraph : IGraph
     {
         #region Fields/Properties
         public IGremlinClient Gremlin { get; set; }
         private static int localId;
-        public List<Vertex> Vertices { get; set; }
+        public GraphType type { get; set; }
+        public List<IVertex> Vertices { get; set; }
 
-        public List<Edge> Edges { get; set; }
+        public List<IEdge> Edges { get; set; }
         private static readonly ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         #endregion
 
@@ -21,11 +23,12 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         /// <summary>
         /// Erzeugt leeren graph
         /// </summary>
-        public TevaGraph(IGremlinClient client)
+        public OrientGraph(IGremlinClient client)
         {
-            Vertices = new List<Vertex>();
-            Edges = new List<Edge>();
+            Vertices = new List<IVertex>();
+            Edges = new List<IEdge>();
             Gremlin = client;
+            type = GraphType.Orient;
             localId = 1;
         }
         #endregion
@@ -36,25 +39,27 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         /// </summary>
         /// <param name="InVertex">eingehende Kante</param>
         /// <param name="OutVertex">ausgehende Kante</param>
-        public Edge AddDirectedEdge(string label, Vertex OutVertex, Vertex InVertex, EdgeProperties Properties = null)
+        public IEdge AddDirectedEdge(string label, IVertex OutVertex, IVertex InVertex, IEdgeProperties Properties = null)
         {
-            Edge tmpEdge = new Edge();
+            IEdge tmpEdge = new OrientEdge();
+            IVertex orientOutVertex = OutVertex;
+            IVertex orientInVertex = InVertex;
+            IEdgeProperties orientProperties = Properties;
             tmpEdge.Label = label;
             tmpEdge.ID = localId.ToString();
             localId++;
             tmpEdge.InVertexLabel = InVertex.Label;
             tmpEdge.OutVertexLabel = OutVertex.Label;
-            tmpEdge.Properties = Properties;
-            tmpEdge.InVertex = InVertex.ID;
-            tmpEdge.OutVertex = OutVertex.ID;
+            tmpEdge.Properties = orientProperties;
+            tmpEdge.InVertex = orientInVertex.ID;
+            tmpEdge.OutVertex = orientOutVertex.ID;
 
             try
             {
-                Edge createdEdge = Gremlin.CreateEdge(tmpEdge.OutVertex.ToString(), tmpEdge.InVertex.ToString(), label);
+                IEdge createdEdge = Gremlin.CreateEdge(tmpEdge.OutVertex.ToString(), tmpEdge.InVertex.ToString(), label);
                 logger.Info("Edge " + createdEdge.ID + "has been created.");
                 tmpEdge = createdEdge;
             }
-            //log4net
             catch (WebSocketException we)
             {
                 logger.Error("Can not connect to Server. " + we);
@@ -67,8 +72,7 @@ namespace Teva.Common.Data.Gremlin.GraphItems
             }
             catch (Exception e)
             {
-                logger.Error(e);
-                Console.WriteLine("Unhandled Exception occured.\n{0}\n{1}", e.ToString(), e.StackTrace);
+                logger.Error("Unhandled Exception occured: " + e);
                 throw;
             }
             Edges.Add(tmpEdge);
@@ -82,9 +86,9 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         /// <param name="vertex1"></param>
         /// <param name="vertex2"></param>
         /// <returns></returns>
-        public List<Edge> AddBiDirectedEdge(string label, Vertex vertex1, Vertex vertex2, EdgeProperties Properties = null)
+        public List<IEdge> AddBiDirectedEdge(string label, IVertex vertex1, IVertex vertex2, IEdgeProperties Properties = null)
         {
-            List<Edge> biDirectedEdges = new List<Edge>();
+            List<IEdge> biDirectedEdges = new List<IEdge>();
             biDirectedEdges.Add(AddDirectedEdge(label, vertex1, vertex2, Properties));
             biDirectedEdges.Add(AddDirectedEdge(label, vertex2, vertex1, Properties));
             return biDirectedEdges;
@@ -97,17 +101,18 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         /// <param name="label">Label als string</param>
         /// <param name="keyValuePairs">Dictonary als Property</param>
         /// <returns></returns>
-        public Vertex AddVertex(string label, VertexProperties properties = null)
+        public IVertex AddVertex(string label, IVertexProperties properties = null)
         {
-            Vertex tmpVertex = new Vertex();
+            IVertex tmpVertex = new OrientVertex();
+            IVertexProperties orientProperties = properties;
             tmpVertex.Label = label;
             tmpVertex.ID = localId.ToString();
             localId++;
-            tmpVertex.Properties = properties;
+            tmpVertex.Properties = orientProperties;
 
             try
             {
-                Vertex createdVert = Gremlin.CreateVertexAndLabel(label, properties);
+                IVertex createdVert = Gremlin.CreateVertexAndLabel(label, (Dictionary<string, List<IVertexValue>>)properties);
                 logger.Info("Vertex " + createdVert.ID + "has been created.");
                 tmpVertex = createdVert;
             }
@@ -131,7 +136,7 @@ namespace Teva.Common.Data.Gremlin.GraphItems
             return tmpVertex;
         }
 
-        public object GetValueFromPropertie(string key, VertexProperties properties)
+        public object GetValueFromPropertie(string key, IVertexProperties properties)
         {
             return properties.GetProperty(key);
         }
