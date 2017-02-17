@@ -12,10 +12,10 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         #region Fields/Properties
         public IGremlinClient Gremlin { get; set; }
         private static int localId;
-        public GraphType type { get; set; }
-        public List<IVertex> Vertices { get; set; }
+        public GraphType type { get; private set; }
+        public List<IVertex> Vertices { get; private set; }
 
-        public List<IEdge> Edges { get; set; }
+        public List<IEdge> Edges { get; private set; }
         private static readonly ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         #endregion
 
@@ -136,7 +136,7 @@ namespace Teva.Common.Data.Gremlin.GraphItems
             return tmpVertex;
         }
 
-        public object GetValueFromPropertie(string key, IVertexProperties properties)
+        public object GetValueFromProperty(string key, IVertexProperties properties)
         {
             return properties.GetProperty(key);
         }

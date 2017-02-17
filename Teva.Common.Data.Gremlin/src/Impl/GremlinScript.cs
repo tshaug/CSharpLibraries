@@ -6,22 +6,41 @@ using System.Threading.Tasks;
 
 namespace Teva.Common.Data.Gremlin
 {
+    /// <summary>
+    /// Stringbuilder for a Gremlin-Query
+    /// </summary>
     public class GremlinScript
     {
+        /// <summary>
+        /// Initializes a new instance of GremlinScript with no content
+        /// </summary>
         public GremlinScript()
         {
         }
+        /// <summary>
+        /// Initializes a new instance of GremlinScript with given Script
+        /// </summary>
+        /// <param name="Script"></param>
         public GremlinScript(string Script)
         {
             Append(Script);
         }
-
+        /// <summary>
+        /// gets metadata of current GremlinScript instance
+        /// </summary>
+        /// <param name="Key">key of metadata</param>
+        /// <returns>meta value</returns>
         public object GetMetadata(string Key)
         {
             if (Metadata == null || !Metadata.ContainsKey(Key))
                 return null;
             return Metadata[Key];
         }
+        /// <summary>
+        /// sets a new key-value-pair of metadata
+        /// </summary>
+        /// <param name="Key">key of metadata</param>
+        /// <param name="Value">value of metadata</param>
         public void SetMetadata(string Key, object Value)
         {
             if (Metadata == null)
@@ -29,16 +48,31 @@ namespace Teva.Common.Data.Gremlin
             Metadata[Key] = Value;
         }
         private Dictionary<string, object> Metadata { get; set; }
-
+        /// <summary>
+        /// appends a given gremlin-statement at the tail of GremlinScript
+        /// </summary>
+        /// <param name="Script">script to append</param>
+        /// <returns>extended GremlinScript</returns>
         public GremlinScript Append(string Script)
         {
             SB.Append(Script);
             return this;
         }
+        /// <summary>
+        /// appends given gremlin-statements at the tail of GremlinScript
+        /// </summary>
+        /// <param name="Parts">scripts to append</param>
+        /// <returns>extended GremlinScript</returns>
         public GremlinScript Append(params object[] Parts)
         {
             return Insert(SB.Length, Parts);
         }
+        /// <summary>
+        /// inserts gremlin-statements on a specific position
+        /// </summary>
+        /// <param name="Index">position to insert</param>
+        /// <param name="Parts">scripts to insert</param>
+        /// <returns>modified GremlinScript</returns>
         public GremlinScript Insert(int Index, params object[] Parts)
         {
             var ToAppend = new StringBuilder();
@@ -47,6 +81,12 @@ namespace Teva.Common.Data.Gremlin
             SB.Insert(Index, ToAppend.ToString());
             return this;
         }
+        /// <summary>
+        /// inserts gremlin-statements on a specific position in the root (first) gremlin-query
+        /// </summary>
+        /// <param name="Index"></param>
+        /// <param name="Parts"></param>
+        /// <returns></returns>
         public GremlinScript InsertRoot(int Index, params object[] Parts)
         {
             var ToAppend = new StringBuilder();
@@ -57,6 +97,9 @@ namespace Teva.Common.Data.Gremlin
         }
 
         #region Internal SBs
+        /// <summary>
+        /// adds a new gremlin-query to GremlinScript
+        /// </summary>
         public void InternalSB_Open()
         {
             if (StoredSBs == null)
@@ -64,6 +107,10 @@ namespace Teva.Common.Data.Gremlin
             StoredSBs.Add(SB);
             SB = new StringBuilder();
         }
+        /// <summary>
+        /// closes current gremlin-query
+        /// </summary>
+        /// <returns>current gremlin-query</returns>
         public string InternalSB_Close()
         {
             if (StoredSBs == null || StoredSBs.Count == 0)
@@ -73,6 +120,10 @@ namespace Teva.Common.Data.Gremlin
             StoredSBs.RemoveAt(StoredSBs.Count - 1);
             return ToReturn;
         }
+        /// <summary>
+        /// gets the first/root element of gremlin-queries 
+        /// </summary>
+        /// <returns></returns>
         public StringBuilder InternalSB_GetRoot()
         {
             if (StoredSBs == null || StoredSBs.Count == 0)
@@ -83,11 +134,18 @@ namespace Teva.Common.Data.Gremlin
         private List<StringBuilder> StoredSBs;
         private StringBuilder SB = new StringBuilder();
         #endregion
-
+        /// <summary>
+        /// gets the current script to string with bindings
+        /// </summary>
+        /// <returns>GremlinScript as string</returns>
         public string GetScript()
         {
             return SB.ToString();
         }
+        /// <summary>
+        /// gets the current script as string without bindings (readable). it's how the gremlin-query would be appear.
+        /// </summary>
+        /// <returns>readable script</returns>
         public string GetReadableScript()
         {
             string ToReturn = SB.ToString();
@@ -117,6 +175,10 @@ namespace Teva.Common.Data.Gremlin
             }
             return ToReturn;
         }
+        /// <summary>
+        /// gets the bindings of the script, e.g. parameter in the has()-statement
+        /// </summary>
+        /// <returns>key-value-pairs of bindings</returns>
         public Dictionary<string, object> GetBindings()
         {
             var ToReturn = new Dictionary<string, object>();
@@ -125,15 +187,27 @@ namespace Teva.Common.Data.Gremlin
                 ToReturn.Add(string.Format("p{0}", Count++), Newtonsoft.Json.Linq.JToken.FromObject(Parameter));
             return ToReturn;
         }
+        /// <summary>
+        /// Returns wether GremlinScript is empty or not empty
+        /// </summary>
+        /// <returns></returns>
         public bool IsEmpty()
         {
             return SB.Length == 0;
         }
+        /// <summary>
+        /// Same as GetScript()
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return SB.ToString();
         }
-
+        /// <summary>
+        /// Gets Name of a parameter with given value
+        /// </summary>
+        /// <param name="Value">value of name</param>
+        /// <returns>name of parameter</returns>
         public string GetParameterName(object Value)
         {
             int CurrentIndex = Parameters.FindIndex(T => T == Value);
@@ -147,19 +221,32 @@ namespace Teva.Common.Data.Gremlin
             }
         }
         private List<object> Parameters = new List<object>();
-
+        // TODO: discover sense behind this function 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string GetNextVariableName()
         {
             VariableNameIndex++;
             return "x_" + VariableNameIndex;
         }
         private int VariableNameIndex = -1;
-
+        /// <summary>
+        /// gets id of the questioned element
+        /// </summary>
+        /// <returns></returns>
         public string Script_GetID()
         {
             return ".id()";
         }
-
+        /// <summary>
+        /// a helping method to append values of an abritary type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="Values">List of values to append</param>
+        /// <param name="Seperator">"," as seperator</param>
+        /// <returns>modified GremlinScript</returns>
         public GremlinScript Append_Values<T>(IEnumerable<T> Values, string Seperator = ",")
         {
             bool First = true;
@@ -173,6 +260,12 @@ namespace Teva.Common.Data.Gremlin
             }
             return this;
         }
+        /// <summary>
+        /// helper method to append properties in query
+        /// </summary>
+        /// <param name="Properties"></param>
+        /// <param name="AddCommaOnFirstItem"></param>
+        /// <returns>modified GremlinScript</returns>
         public GremlinScript Append_PropertiesArrayString(Dictionary<string, object> Properties, bool AddCommaOnFirstItem = false)
         {
             if (Properties == null)
@@ -195,6 +288,12 @@ namespace Teva.Common.Data.Gremlin
             }
             return this;
         }
+        /// <summary>
+        /// helper method do append porperties in query
+        /// </summary>
+        /// <param name="Properties"></param>
+        /// <param name="AddCommaOnFirstItem"></param>
+        /// <returns>modified GremlinScript</returns>
         public GremlinScript Append_PropertiesArrayString(Dictionary<string, List<GraphItems.IVertexValue>> Properties, bool AddCommaOnFirstItem = false)
         {
             if (Properties == null)
@@ -221,10 +320,23 @@ namespace Teva.Common.Data.Gremlin
         }
 
         #region VertexExists
+        /// <summary>
+        /// appends g.V().has('IndexName','ID').hasNext(), Gremlin returns Boolean
+        /// </summary>
+        /// <param name="IndexName">key</param>
+        /// <param name="ID">value</param>
+        /// <returns>modified GremlinScript</returns>
         public GremlinScript Append_VertexExistsByIndex(string IndexName, object ID)
         {
             return Append_GetVerticesByIndex(IndexName, ID).Append_HasNext();
         }
+        /// <summary>
+        /// appends g.V().has('IndexName','ID').has(T.label,'Label').hasNext(), Gremlin returns Boolean
+        /// </summary>
+        /// <param name="Label">label</param>
+        /// <param name="IndexName">key</param>
+        /// <param name="ID">value</param>
+        /// <returns>modified GremlinScript</returns>
         public GremlinScript Append_VertexExistsByIndexAndLabel(string Label, string IndexName, object ID)
         {
             return Append_GetVerticesByIndexAndLabel(Label, IndexName, ID).Append_HasNext();
@@ -232,18 +344,40 @@ namespace Teva.Common.Data.Gremlin
         #endregion
 
         #region GetVertex/GetVertices
+        /// <summary>
+        /// appends g.V(ID), gets vertex by ID, Gremlin returns Vertex
+        /// </summary>
+        /// <param name="ID">ID of vertex</param>
+        /// <returns>modified GremlinScript</returns>
         public GremlinScript Append_GetVertex(string ID)
         {
             return Append("g.V(").Append_Parameter(ID).Append(")");
         }
+        /// <summary>
+        /// appends g.V(IDs[0],...,IDs[n]), gets vertices by IDs, Gremlin returns List of Vertices
+        /// </summary>
+        /// <param name="IDs">List of IDs of vertices</param>
+        /// <returns>modified GremlinScript</returns>
         public GremlinScript Append_GetVertices(IEnumerable<string> IDs)
         {
             return Append("g.V(").Append_Values(IDs).Append(")");
         }
+        /// <summary>
+        /// appends g.V().has('IndexName','ID'), gets vertices by property, Gremlin returns List of Vertices
+        /// </summary>
+        /// <param name="IndexName">key</param>
+        /// <param name="ID">value</param>
+        /// <returns>modified GremlinScript</returns>
         public GremlinScript Append_GetVerticesByIndex(string IndexName, object ID)
         {
             return Append("g.V().has(").Append_Parameter(IndexName).Append(",").Append_Parameter(ID).Append(")");
         }
+        /// <summary>
+        /// appends g.V().has('IndexName',within('IDs[0]',...,'IDs[n])), gets vertices by key and values, Gremlin returns List of Vertices
+        /// </summary>
+        /// <param name="IndexName">index</param>
+        /// <param name="IDs">values</param>
+        /// <returns>modified GremlinScript</returns>
         public GremlinScript Append_GetVerticesByIndex(string IndexName, IEnumerable<object> IDs)
         {
             if (IDs.Count() == 1)
@@ -251,10 +385,24 @@ namespace Teva.Common.Data.Gremlin
             else
                 return Append("g.V().has(").Append_Parameter(IndexName).Append(",within(").Append_Values(IDs).Append("))");
         }
+        /// <summary>
+        /// appends g.V().has('IndexName','ID').has(T.label,'Label'), gets vertices by label, key and value, Gremlin returns List of Vertices
+        /// </summary>
+        /// <param name="Label"></param>
+        /// <param name="IndexName"></param>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public GremlinScript Append_GetVerticesByIndexAndLabel(string Label, string IndexName, object ID)
         {
             return Append_GetVerticesByIndex(IndexName, ID).Append_FilterLabel(Label);
         }
+        /// <summary>
+        /// appends g.V().has('IndexName',within('IDs[0]',...,'IDs[n])).has(T.label,'Label'), gets vertices by label, key and values, Gremlin returns List of Vertices
+        /// </summary>
+        /// <param name="Label"></param>
+        /// <param name="IndexName"></param>
+        /// <param name="IDs"></param>
+        /// <returns></returns>
         public GremlinScript Append_GetVerticesByIndexAndLabel(string Label, string IndexName, IEnumerable<object> IDs)
         {
             return Append_GetVerticesByIndex(IndexName, IDs).Append_FilterLabel(Label);
@@ -262,10 +410,23 @@ namespace Teva.Common.Data.Gremlin
         #endregion
 
         #region GetVertexID
+        /// <summary>
+        /// appends g.V().has('IndexName','ID'), gets vertices by property, Gremlin returns ids of vertices
+        /// </summary>
+        /// <param name="IndexName"></param>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public GremlinScript Append_GetVertexIDByIndex(string IndexName, object ID)
         {
             return Append_GetVerticesByIndex(IndexName, ID).Append_ID();
         }
+        /// <summary>
+        /// appends g.V().has('IndexName','ID').has(T.label,'Label'), gets vertices by label, key and value, Gremlin returns ids of vertices
+        /// </summary>
+        /// <param name="Label"></param>
+        /// <param name="IndexName"></param>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public GremlinScript Append_GetVertexIDByIndexAndLabel(string Label, string IndexName, object ID)
         {
             return Append_GetVerticesByIndexAndLabel(Label, IndexName, ID).Append_ID();
@@ -273,14 +434,31 @@ namespace Teva.Common.Data.Gremlin
         #endregion
 
         #region GetEdge
+        /// <summary>
+        /// appends g.E(ID), gets edge by id, Gremlin returns wanted edge
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public GremlinScript Append_GetEdge(string ID)
         {
             return Append("g.E(").Append_Parameter(ID).Append(")");
         }
+        /// <summary>
+        /// appends g.V(ID).bothE('EdgeName'), gets bidirected edge from StartVertex, Gremlin returns wanted List of edges
+        /// </summary>
+        /// <param name="StartVertexID"></param>
+        /// <param name="EdgeName"></param>
+        /// <returns></returns>
         public GremlinScript Append_GetEdge_Both(string StartVertexID, string EdgeName)
         {
             return Append_GetVertex(StartVertexID).Append_BothE(EdgeName);
         }
+        /// <summary>
+        /// appends g.V(ID).bothE('EdgeName'), gets outgoing edge from StartVertex, Gremlin returns wanted List of edges
+        /// </summary>
+        /// <param name="StartVertexID"></param>
+        /// <param name="EdgeName"></param>
+        /// <returns></returns>
         public GremlinScript Append_GetEdge_Out(string StartVertexID, string EdgeName)
         {
             return Append_GetVertex(StartVertexID).Append_OutE(EdgeName);

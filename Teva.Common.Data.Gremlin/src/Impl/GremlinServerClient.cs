@@ -8,9 +8,22 @@ using log4net;
 
 namespace Teva.Common.Data.Gremlin.Impl
 {
+    /// <summary>
+    /// Class to communicate with Gremlin Server
+    /// </summary>
     public class GremlinServerClient : IGremlinServerClient
     {
         private static readonly ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        /// <summary>
+        /// Intializes a new instance of GremlinServerClient, communicates directly with Gremlin Server
+        /// </summary>
+        /// <param name="Host">Host to connect</param>
+        /// <param name="postfix">"/gremlin" required since TinkerPop 3.2</param>
+        /// <param name="Port">Port, which is provided from Host (mostly 8182)</param>
+        /// <param name="UseBinary">Metric for TinkerPop-Connection</param>
+        /// <param name="ReadBufferSize">Metric for TinkerPop-Connection</param>
+        /// <param name="Username">Username if required</param>
+        /// <param name="Password">Password if required</param>
         public GremlinServerClient(string Host = "localhost", string postfix = "/gremlin", int Port = 8182, bool UseBinary = true, int ReadBufferSize = 1024, string Username = null, string Password = null)
         {
             this.Host = Host;
@@ -21,7 +34,14 @@ namespace Teva.Common.Data.Gremlin.Impl
             this.Username = Username;
             this.Password = Password;
         }
-
+        /// <summary>
+        /// Executes a statement and returns a list of a generic type
+        /// </summary>
+        /// <typeparam name="ResultDataType"></typeparam>
+        /// <param name="Script"></param>
+        /// <param name="Bindings"></param>
+        /// <param name="Session"></param>
+        /// <returns>List of generic type</returns>
         public List<ResultDataType> Execute<ResultDataType>(string Script, Dictionary<string, object> Bindings = null, Guid? Session = null)
         {
             return RunSync(delegate ()
@@ -29,6 +49,15 @@ namespace Teva.Common.Data.Gremlin.Impl
                 return ExecuteAsync<ResultDataType>(Script, Bindings, Session);
             });
         }
+        /// <summary>
+        /// Executes a statement with a provided WebSocket and returns a list of generic type
+        /// </summary>
+        /// <typeparam name="ResultDataType"></typeparam>
+        /// <param name="Socket"></param>
+        /// <param name="Script"></param>
+        /// <param name="Bindings"></param>
+        /// <param name="Session"></param>
+        /// <returns></returns>
         public List<ResultDataType> Execute<ResultDataType>(ClientWebSocket Socket, string Script, Dictionary<string, object> Bindings = null, Guid? Session = null)
         {
             return RunSync(delegate ()
@@ -36,7 +65,14 @@ namespace Teva.Common.Data.Gremlin.Impl
                 return ExecuteAsync<ResultDataType>(Socket, Script, Bindings, Session);
             });
         }
-
+        /// <summary>
+        /// Utilized from Execute, which awaits the task with new ClientWebSocket
+        /// </summary>
+        /// <typeparam name="ResultDataType"></typeparam>
+        /// <param name="Script"></param>
+        /// <param name="Bindings"></param>
+        /// <param name="Session"></param>
+        /// <returns></returns>
         public Task<List<ResultDataType>> ExecuteAsync<ResultDataType>(string Script, Dictionary<string, object> Bindings = null, Guid? Session = null)
         {
             var Message = new Messages.ScriptRequestMessage
@@ -45,6 +81,15 @@ namespace Teva.Common.Data.Gremlin.Impl
             };
             return ExecuteAsync<ResultDataType>(Message);
         }
+        /// <summary>
+        /// Utilized from Execute, which awaits the task with provided Websocket. Deserialisation of JSON
+        /// </summary>
+        /// <typeparam name="ResultDataType"></typeparam>
+        /// <param name="Socket"></param>
+        /// <param name="Script"></param>
+        /// <param name="Bindings"></param>
+        /// <param name="Session"></param>
+        /// <returns></returns>
         public Task<List<ResultDataType>> ExecuteAsync<ResultDataType>(ClientWebSocket Socket, string Script, Dictionary<string, object> Bindings = null, Guid? Session = null)
         {
             var Message = new Messages.ScriptRequestMessage
@@ -146,7 +191,14 @@ namespace Teva.Common.Data.Gremlin.Impl
                 }
             }
         }
-
+        /// <summary>
+        /// Executes a statement and returns a scalar
+        /// </summary>
+        /// <typeparam name="ResultDataType"></typeparam>
+        /// <param name="Script"></param>
+        /// <param name="Bindings"></param>
+        /// <param name="Session"></param>
+        /// <returns>Deserialized scalar</returns>
         public ResultDataType ExecuteScalar<ResultDataType>(string Script, Dictionary<string, object> Bindings = null, Guid? Session = null)
         {
             return RunSync(delegate ()
@@ -154,6 +206,15 @@ namespace Teva.Common.Data.Gremlin.Impl
                 return ExecuteScalarAsync<ResultDataType>(Script, Bindings, Session);
             });
         }
+        /// <summary>
+        /// Executes a statement with provided WebSocket and returns a scalar. 
+        /// </summary>
+        /// <typeparam name="ResultDataType"></typeparam>
+        /// <param name="Socket"></param>
+        /// <param name="Script"></param>
+        /// <param name="Bindings"></param>
+        /// <param name="Session"></param>
+        /// <returns>Deserialized scalar</returns>
         public ResultDataType ExecuteScalar<ResultDataType>(ClientWebSocket Socket, string Script, Dictionary<string, object> Bindings = null, Guid? Session = null)
         {
             return RunSync(delegate ()
@@ -161,7 +222,14 @@ namespace Teva.Common.Data.Gremlin.Impl
                 return ExecuteScalarAsync<ResultDataType>(Socket, Script, Bindings, Session);
             });
         }
-
+        /// <summary>
+        /// Utilized from Execute, which awaits the task with new ClientWebSocket
+        /// </summary>
+        /// <typeparam name="ResultDataType"></typeparam>
+        /// <param name="Script"></param>
+        /// <param name="Bindings"></param>
+        /// <param name="Session"></param>
+        /// <returns>Deserialized scalar</returns>
         public Task<ResultDataType> ExecuteScalarAsync<ResultDataType>(string Script, Dictionary<string, object> Bindings = null, Guid? Session = null)
         {
             var Message = new Messages.ScriptRequestMessage
@@ -170,6 +238,15 @@ namespace Teva.Common.Data.Gremlin.Impl
             };
             return ExecuteScalarAsync<ResultDataType>(Message);
         }
+        /// <summary>
+        /// Utilized from Execute, which awaits the task with provided WebSocket
+        /// </summary>
+        /// <typeparam name="ResultDataType"></typeparam>
+        /// <param name="Socket"></param>
+        /// <param name="Script"></param>
+        /// <param name="Bindings"></param>
+        /// <param name="Session"></param>
+        /// <returns>Deserialized scalar</returns>
         public Task<ResultDataType> ExecuteScalarAsync<ResultDataType>(ClientWebSocket Socket, string Script, Dictionary<string, object> Bindings = null, Guid? Session = null)
         {
             var Message = new Messages.ScriptRequestMessage
@@ -219,7 +296,7 @@ namespace Teva.Common.Data.Gremlin.Impl
                 switch (Response.Status.Code)
                 {
                     case 200: // SUCCESS
-
+                        
                     case 204: // NO CONTENT
                         logger.Info("HTTP 204 NO CONTENT");
                         return default(ResultDataType);
@@ -282,13 +359,33 @@ namespace Teva.Common.Data.Gremlin.Impl
         {
             return TaskFactory.StartNew(Function).Unwrap().GetAwaiter().GetResult();
         }
-
+        /// <summary>
+        /// Host to connect
+        /// </summary>
         public string Host { get; private set; }
+        /// <summary>
+        /// Port, which is provided from Host (mostly 8182)
+        /// </summary>
         public int Port { get; private set; }
+        /// <summary>
+        /// Metric for TinkerPop-Connection
+        /// </summary>
         public bool UseBinary { get; private set; }
+        /// <summary>
+        /// Uri is consisting of Host, Port and postfix
+        /// </summary>
         public Uri Uri { get; private set; }
+        /// <summary>
+        /// Metric for TinkerPop-Connection
+        /// </summary>
         public int ReadBufferSize { get; private set; }
+        /// <summary>
+        /// Username if required
+        /// </summary>
         public string Username { get; private set; }
+        /// <summary>
+        /// Username if provided
+        /// </summary>
         public string Password { get; private set; }
     }
 }
