@@ -2,19 +2,33 @@
 
 namespace Teva.Common.Data.Gremlin.GraphItems.Orient
 {
+    /// <summary>
+    /// ID of OrientGraphItem
+    /// </summary>
     public class OrientGraphItemId
     {
+        /// <summary>
+        /// clusterId of ID
+        /// </summary>
         [JsonProperty("clusterId")]
         public string clusterId { get; set; }
-
+        /// <summary>
+        /// clusterPosition of ID
+        /// </summary>
         [JsonProperty("clusterPosition")]
         public string clusterPosition { get; set; }
-
+        /// <summary>
+        /// Get the right representation of a GraphItemID
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return clusterId + ":" + clusterPosition;
         }
-
+        /// <summary>
+        /// Helper-method to save an id
+        /// </summary>
+        /// <param name="rid">Id to save</param>
         public void saveId(string rid)
         {
             string[] ids = rid.Split(':');

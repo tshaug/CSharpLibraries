@@ -1,55 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using System.Net.WebSockets;
-using log4net;
+﻿using System.Collections.Generic;
 
 namespace Teva.Common.Data.Gremlin.GraphItems
 {
+    /// <summary>
+    /// Interface for a local Graph implementation
+    /// </summary>
     public interface IGraph
     {
         #region Fields/Properties
+        /// <summary>
+        /// Send Data via client
+        /// </summary>
         IGremlinClient Gremlin { get; set; }
         /// <summary>
-        /// 
+        /// Type of Graph 
         /// </summary>
         GraphType type { get; }
         /// <summary>
-        /// Amount of Nodes in the graph
+        /// Amount of vertices
         /// </summary>
-        List<IVertex> Vertices { get; }
+        List<IVertex> Vertices { get; set; }
         /// <summary>
-        /// Amount of Edges in the graph
+        /// Amount of edges
         /// </summary>
-        List<IEdge> Edges { get; }
+        List<IEdge> Edges { get; set; }
+
         #endregion
 
         #region Edges/Vertex-Methods
         /// <summary>
-        /// Creates a directed Edge and saves to DB and local graph
+        /// Creates a directed Edge and saves to DB
         /// </summary>
-        /// <param name="label"></param>
-        /// <param name="InVertex">Incoming Edge</param>
-        /// <param name="OutVertex">Outgoing Edge</param>
-        /// <param name="Properties"></param>
+        /// <param name="label">Label of created edge</param>
+        /// <param name="InVertex">Ingoing vertex to connect</param>
+        /// <param name="OutVertex">Outgoing vertex to connect</param>
+        /// <param name="Properties">Properties of created edge</param>
+        /// <returns>Created IEdge</returns>
         IEdge AddDirectedEdge(string label, IVertex OutVertex, IVertex InVertex, IEdgeProperties Properties = null);
 
         /// <summary>
-        /// Creates a bidirected Edge and saves to DB and local graph
+        /// Creates a bidirected Edge and saves to DB
         /// </summary>
-        /// <param name="label"></param>
-        /// <param name="vertex1"></param>
-        /// <param name="vertex2"></param>
-        /// <param name="Properties"></param>
-        /// <returns></returns>
+        /// <param name="label">Label of created edge</param>
+        /// <param name="vertex1">A vertex to connect</param>
+        /// <param name="vertex2">Another vertex to connect</param>
+        /// <param name="Properties">Properties of created edge</param>
+        /// <returns>Created bidirected edge as List of IEdge</returns>
         List<IEdge> AddBiDirectedEdge(string label, IVertex vertex1, IVertex vertex2, IEdgeProperties Properties = null);
 
         /// <summary>
-        /// Creates a Node 
+        /// Creates a vertex with given label and properties 
         /// </summary>
-        /// <param name="label">label as string</param>
-        /// <param name="properties">Properties</param>
-        /// <returns></returns>
+        /// <param name="label">Label of created vertex</param>
+        /// <param name="properties">Properties of created vertex</param>
+        /// <returns>Created IVertex</returns>
         IVertex AddVertex(string label, IVertexProperties properties = null);
 
         /// <summary>
