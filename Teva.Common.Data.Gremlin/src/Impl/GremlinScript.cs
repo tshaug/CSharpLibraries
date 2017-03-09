@@ -292,7 +292,7 @@ namespace Teva.Common.Data.Gremlin
         /// helper method do append porperties in query
         /// </summary>
         /// <param name="Properties">Vertex-Properties to append</param>
-        /// <param name="AddCommaOnFirstItem"></param>
+        /// <param name="AddCommaOnFirstItem">Appends comma on first item</param>
         /// <returns>Modified GremlinScript</returns>
         public GremlinScript Append_PropertiesArrayString(Dictionary<string, List<GraphItems.IVertexValue>> Properties, bool AddCommaOnFirstItem = false)
         {

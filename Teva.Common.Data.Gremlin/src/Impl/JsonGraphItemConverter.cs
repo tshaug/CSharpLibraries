@@ -34,8 +34,8 @@ namespace Teva.Common.Data.Gremlin.Impl
         /// </summary>
         /// <param name="reader">Reader that has json</param>
         /// <param name="objectType">objectType to which should be converted</param>
-        /// <param name="existingValue"></param>
-        /// <param name="serializer"></param>
+        /// <param name="existingValue">A potentially existing value</param>
+        /// <param name="serializer">Serializer that is in use</param>
         /// <returns>parsed object</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
@@ -114,7 +114,7 @@ namespace Teva.Common.Data.Gremlin.Impl
         /// </summary>
         /// <param name="writer">JsonWriter</param>
         /// <param name="value">value to convert</param>
-        /// <param name="serializer"></param>
+        /// <param name="serializer">Serializer that is in use</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             throw new InvalidOperationException("Use default serialization.");

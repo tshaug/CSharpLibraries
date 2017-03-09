@@ -159,6 +159,37 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         {
             return properties.GetProperty(key);
         }
+
+        /// <summary>
+        /// Commits all changes
+        /// </summary>
+        public void CommitChanges()
+        {
+            Gremlin.Execute(new GremlinScript("graph.tx().commit()"));
+        }
+        
+        void IGraph.CreateIndexOnProperty(string propertykey1)
+        {
+            logger.Error("This method should not be in use");
+        }
+
+        /// <summary>
+        /// OrientDB implementation for creating an Index on a Propertykey
+        /// </summary>
+        /// <param name="propertykey">Key to index</param>
+        /// <param name="label">Label of Vertex</param>
+        public void CreateIndexOnProperty(string propertykey, string label)
+        {
+            Gremlin.Execute(new GremlinScript("def config = new BaseConfiguration(); graph.prepareIndexConfiguration(config); graph.createVertexIndex(\"" + propertykey + "\", \"" + label + "\", config)"));
+        }
+
+        /// <summary>
+        /// Deletes all vertices and edges of current graph
+        /// </summary>
+        public void DeleteExistingGraph()
+        {
+            Gremlin.Execute(new GremlinScript("graph.executeSql(\"delete vertex V\")"));
+        }
         #endregion
     }
 }

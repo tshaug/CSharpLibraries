@@ -63,6 +63,22 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         /// <param name="properties">properties, that contains value</param>
         /// <returns>wanted value</returns>
         object GetValueFromProperty(string key, IVertexProperties properties);
+
+        /// <summary>
+        /// Commits all changes of current transaction
+        /// </summary>
+        void CommitChanges();
+
+        /// <summary>
+        /// Creates an Index on a Propertykey
+        /// </summary>
+        /// <param name="propertykey">Propertykey to Index</param>
+        void CreateIndexOnProperty(string propertykey);
+
+        /// <summary>
+        /// Deletes all Vertices and Edges of a Graph
+        /// </summary>
+        void DeleteExistingGraph();
         #endregion
     }
     /// <summary>
@@ -77,6 +93,10 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         /// <summary>
         /// Database is Titan
         /// </summary>
-        Titan
+        Titan,
+        /// <summary>
+        /// Database is TinkerPop
+        /// </summary>
+        TinkerPop
     };
 }

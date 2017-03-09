@@ -20,7 +20,7 @@ namespace Teva.Common.Data.Gremlin.GraphItems.Orient
         /// <summary>
         /// Get the right representation of a GraphItemID
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Representation of a GraphItemID as string</returns>
         public override string ToString()
         {
             return clusterId + ":" + clusterPosition;

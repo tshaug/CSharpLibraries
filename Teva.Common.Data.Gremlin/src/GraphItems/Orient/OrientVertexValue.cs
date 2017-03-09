@@ -16,7 +16,7 @@ namespace Teva.Common.Data.Gremlin.GraphItems.Orient
         /// <summary>
         /// Initializes a new instance of OrientVertexValue and sets given Contents
         /// </summary>
-        /// <param name="Contents"></param>
+        /// <param name="Contents">Contents to set</param>
         public OrientVertexValue(object Contents)
         {
             this.Contents = Contents;

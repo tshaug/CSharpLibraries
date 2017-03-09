@@ -16,7 +16,7 @@ namespace Teva.Common.Data.Gremlin.GraphItems.Titan
         /// <summary>
         /// Initializes a new instance of TitanVertexValue and sets given Contents
         /// </summary>
-        /// <param name="Contents"></param>
+        /// <param name="Contents">Contents to set</param>
         public TitanVertexValue(object Contents)
         {
             this.Contents = Contents;

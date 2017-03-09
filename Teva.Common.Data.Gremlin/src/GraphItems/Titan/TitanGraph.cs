@@ -128,8 +128,7 @@ namespace Teva.Common.Data.Gremlin.GraphItems
             try
             {
                 GremlinScript script = new GremlinScript();
-                script.Append_CreateVertexWithLabel(label, (Dictionary<string, List<IVertexValue>>)properties);
-                script.Append(";");
+                script.Append_CreateVertexWithLabel(label, (Dictionary<string, List<IVertexValue>>)properties).Append(";");
                 IVertex createdVert = Gremlin.GetVertex(script);
                 logger.Info("Vertex " + createdVert.ID + " has been created.");
                 tmpVertex = createdVert;
@@ -162,6 +161,37 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         {
             return properties.GetProperty(key);
         }
-        #endregion        
+
+        /// <summary>
+        /// Commits all changes
+        /// </summary>
+        public void CommitChanges()
+        {
+            Gremlin.Execute(new GremlinScript("graph.tx().commit()"));
+        }
+
+        /// <summary>
+        /// Sets a composite index (see http://s3.thinkaurelius.com/docs/titan/1.0.0/indexes.html#_composite_index ) 
+        /// </summary>
+        /// <param name="propertykey">Propertykey to index</param>
+        public virtual void CreateIndexOnProperty(string propertykey)
+        {
+            object indexPropertyKey = Gremlin.GetScalar(new GremlinScript("mgmt = graph.openManagement(); mgmt.getPropertyKey('" + propertykey + "')"));
+            if (indexPropertyKey == null)
+            {
+                Gremlin.Execute(
+                new GremlinScript("graph.tx().rollback(); mgmt = graph.openManagement(); name = mgmt.makePropertyKey('" + propertykey +"').dataType(String.class).make(); mgmt.buildIndex('" + propertykey + "', Vertex.class).addKey(name).buildCompositeIndex(); mgmt.commit();")
+                );
+            }
+        }
+
+        /// <summary>
+        /// Deletes all vertices and edges of a Graph
+        /// </summary>
+        public void DeleteExistingGraph()
+        {
+            Gremlin.Execute(new GremlinScript("g.V().drop()"));
+        }
+        #endregion
     }
 }
