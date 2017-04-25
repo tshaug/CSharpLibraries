@@ -33,6 +33,8 @@ namespace Teva.Common.Data.Gremlin.Impl
             this.Uri = new Uri("ws://" + Host + ":" + Port + postfix);
             this.Username = Username;
             this.Password = Password;
+            logger.Info(this.ToString());
+            
         }
         /// <summary>
         /// Executes a statement and returns a list of a generic type
@@ -44,6 +46,8 @@ namespace Teva.Common.Data.Gremlin.Impl
         /// <returns>List of generic type</returns>
         public List<ResultDataType> Execute<ResultDataType>(string Script, Dictionary<string, object> Bindings = null, Guid? Session = null)
         {
+
+
             return RunSync(delegate ()
             {
                 return ExecuteAsync<ResultDataType>(Script, Bindings, Session);
@@ -201,8 +205,10 @@ namespace Teva.Common.Data.Gremlin.Impl
         /// <returns>Scalar that comes from TinkerPop</returns>
         public ResultDataType ExecuteScalar<ResultDataType>(string Script, Dictionary<string, object> Bindings = null, Guid? Session = null)
         {
+       
             return RunSync(delegate ()
             {
+                
                 return ExecuteScalarAsync<ResultDataType>(Script, Bindings, Session);
             });
         }
@@ -258,6 +264,8 @@ namespace Teva.Common.Data.Gremlin.Impl
 
         private async Task<ResultDataType> ExecuteScalarAsync<ResultDataType>(Messages.RequestMessage Message)
         {
+        
+
             using (var Socket = new ClientWebSocket())
             {
                 await Socket.ConnectAsync(Uri, System.Threading.CancellationToken.None);
@@ -288,6 +296,7 @@ namespace Teva.Common.Data.Gremlin.Impl
                         break;
                 }
                 var ResponseString = System.Text.Encoding.UTF8.GetString(MS.ToArray());
+                logger.Debug("ResponseString: " + ResponseString);
                 var Response = JsonConvert.DeserializeObject<Messages.ScriptResponse<ResultDataType>>(ResponseString);
 
                 if (Response.Result.Data != null && Response.Result.Data.Count > 0)
@@ -342,6 +351,7 @@ namespace Teva.Common.Data.Gremlin.Impl
         private byte[] GetMessageBytes(Messages.RequestMessage Message)
         {
             var Json = JsonConvert.SerializeObject(Message);
+            logger.Debug(Json);
             if (UseBinary)
             {
                 var SB = new StringBuilder();
@@ -387,5 +397,25 @@ namespace Teva.Common.Data.Gremlin.Impl
         /// Username if provided
         /// </summary>
         public string Password { get; private set; }
+
+        public override string ToString()
+        {
+            StringBuilder config = new StringBuilder();
+            config.Append("Host: ");
+            config.Append(Host);
+            config.Append(" Port: ");
+            config.Append(Port);
+            config.Append(" UseBinary: ");
+            config.Append(UseBinary);
+            config.Append(" Uri ");
+            config.Append(Uri.AbsoluteUri);
+            config.Append(" ReadBufferSize: ");
+            config.Append(ReadBufferSize);
+            config.Append(" Username: ");
+            config.Append(Username);
+            config.Append(" Password: ");
+            config.Append("...");
+            return config.ToString();
+        }
     }
 }

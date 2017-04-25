@@ -13,7 +13,8 @@ namespace Teva.Common.Data.Gremlin
         /// <summary>
         /// Executes a statement and returns a list of a generic type
         /// </summary>
-        /// <typeparam name="ResultDataType">Datatype to parse in</typeparam>
+        /// <typeparam name="
+        /// ">Datatype to parse in</typeparam>
         /// <param name="Script">Script to send</param>
         /// <param name="Bindings">Bindings of the script</param>
         /// <param name="Session">Session if available</param>

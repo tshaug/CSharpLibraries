@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Teva.Common.Data.Gremlin.GraphItems.GraphItemId;
 using Teva.Common.Data.Gremlin.Impl;
 
 namespace Teva.Common.Data.Gremlin.GraphItems
@@ -12,7 +13,7 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         /// <summary>
         /// ID of the ingoing vertex
         /// </summary>
-        string InVertex { get; set; }
+        ItemId InVertex { get; set; }
         /// <summary>
         /// Label of the ingoing vertex
         /// </summary>
@@ -20,7 +21,7 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         /// <summary>
         /// ID of the outgoing vertex
         /// </summary>
-        string OutVertex { get; set; }
+        ItemId OutVertex { get; set; }
         /// <summary>
         /// Label of the outgoing vertex
         /// </summary>

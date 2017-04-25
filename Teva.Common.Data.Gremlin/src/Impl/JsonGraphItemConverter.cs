@@ -2,8 +2,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Teva.Common.Data.Gremlin.GraphItems;
-using Teva.Common.Data.Gremlin.GraphItems.Orient;
-using Teva.Common.Data.Gremlin.GraphItems.Titan;
+using Teva.Common.Data.Gremlin.GraphItems.GraphItemImpl;
+using log4net;
+using Teva.Common.Data.Gremlin.GraphItems.GraphItemId;
 
 namespace Teva.Common.Data.Gremlin.Impl
 {
@@ -12,6 +13,9 @@ namespace Teva.Common.Data.Gremlin.Impl
     /// </summary>
     public class JsonGraphItemConverter : JsonConverter
     {
+
+        private static readonly ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+     
         /// <summary>
         /// Field for Reading access (always true)
         /// </summary>
@@ -40,75 +44,39 @@ namespace Teva.Common.Data.Gremlin.Impl
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var jsonObject = JObject.Load(reader);
-
+            //logger.Debug(objectType);
             var graphItemType = default(object);
-            if (objectType == typeof(TitanVertexProperties) || objectType == typeof(OrientVertexProperties))
+           
+            if (objectType == typeof(IVertex))
             {
-                if (objectType == typeof(OrientVertexProperties))
-                {
-                    graphItemType = new OrientVertexProperties();
-                }
-                else if (objectType == typeof(TitanVertexProperties))
-                {
-                    graphItemType = new TitanVertexProperties();
-                }
+                graphItemType = new Vertex();
             }
-            else if (objectType == typeof(TitanEdgeProperties) || objectType == typeof(OrientEdgeProperties))
+            else if (objectType == typeof(IEdge))
             {
-                if (objectType == typeof(OrientEdgeProperties))
-                {
-                    graphItemType = new OrientEdgeProperties();
-                }
-                else if (objectType == typeof(TitanEdgeProperties))
-                {
-                    graphItemType = new TitanEdgeProperties();
-                }
+                graphItemType = new Edge();
+            }
+            else if (objectType == typeof(IVertexValue))
+            {
+                graphItemType = new VertexValue();
+            }
+            else if (objectType == typeof(IVertexProperties))
+            {
+                graphItemType = new VertexProperties();
+            }
+            else if (objectType == typeof(IEdgeProperties))
+            {
+                graphItemType = new EdgeProperties();
             }
             else
             {
-                JProperty jsonProp = jsonObject.Property("id");
-                JToken token = jsonProp.Value;
-                //Titan
-                if (token.Type == JTokenType.Integer || token.Type == JTokenType.String)
-                {
-                    if (objectType == typeof(IVertex))
-                    {
-                        graphItemType = new TitanVertex();
-                    }
-                    else if (objectType == typeof(IEdge))
-                    {
-                        graphItemType = new TitanEdge();
-                    }
-
-                    else if (objectType == typeof(IVertexValue))
-                    {
-                        graphItemType = new TitanVertexValue();
-                    }
-                }
-                //Orient
-                else if (token.Type == JTokenType.Object)
-                {
-                    if (objectType == typeof(IVertex))
-                    {
-                        graphItemType = new OrientVertex();
-                    }
-                    else if (objectType == typeof(IEdge))
-                    {
-                        graphItemType = new OrientEdge();
-                    }
-                    else if (objectType == typeof(IVertexValue))
-                    {
-                        graphItemType = new OrientVertexValue();
-                    }
-                }
-                else
-                {
-                    throw (new Exceptions.NotSupportedDatabaseException("Not supported GraphDatabase. Titan or OrientDB are supported."));
-                }
+                throw (new Exceptions.NotSupportedDatabaseException("Not supported GraphDatabase. Titan or OrientDB are supported."));
             }
+
             serializer.Populate(jsonObject.CreateReader(), graphItemType);
             return graphItemType;
         }
+
+
         /// <summary>
         /// Overrride WriteJson method (not needed, throws exception)
         /// </summary>

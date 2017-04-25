@@ -11,11 +11,12 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         /// <summary>
         /// Send Data via client
         /// </summary>
-        IGremlinClient Gremlin { get; set; }
+        IGremlinClient GremlinClient { get; set; }
+       
         /// <summary>
         /// Type of Graph 
         /// </summary>
-        GraphType type { get; }
+        GraphType Type { get; }
         /// <summary>
         /// Amount of vertices
         /// </summary>
@@ -24,6 +25,7 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         /// Amount of edges
         /// </summary>
         List<IEdge> Edges { get; set; }
+
 
         #endregion
 
@@ -73,30 +75,20 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         /// Creates an Index on a Propertykey
         /// </summary>
         /// <param name="propertykey">Propertykey to Index</param>
-        void CreateIndexOnProperty(string propertykey);
+        void CreateIndexOnProperty(string propertykey, string label=null);
 
         /// <summary>
         /// Deletes all Vertices and Edges of a Graph
         /// </summary>
         void DeleteExistingGraph();
         #endregion
+
+        #region GremlienClient
+
+        IGraph AddClient(IGremlinClient client);
+
+        #endregion
     }
-    /// <summary>
-    /// Graph Type of IGraph
-    /// </summary>
-    public enum GraphType
-    {
-        /// <summary>
-        /// Database is OrientDB
-        /// </summary>
-        Orient,
-        /// <summary>
-        /// Database is Titan
-        /// </summary>
-        Titan,
-        /// <summary>
-        /// Database is TinkerPop
-        /// </summary>
-        TinkerPop
-    };
+
+
 }

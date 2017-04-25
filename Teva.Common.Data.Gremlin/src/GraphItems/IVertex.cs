@@ -1,11 +1,16 @@
 ﻿using Newtonsoft.Json;
+using Teva.Common.Data.Gremlin.GraphItems.GraphItemId;
 using Teva.Common.Data.Gremlin.Impl;
+
+
+using System.Runtime.Serialization;
 
 namespace Teva.Common.Data.Gremlin.GraphItems
 {
     /// <summary>
     /// Interface for Vertex, is a derivation of IGraphItem
     /// </summary>
+     
     [JsonConverter(typeof(JsonGraphItemConverter))]
     public interface IVertex : IGraphItem
     {
@@ -21,5 +26,7 @@ namespace Teva.Common.Data.Gremlin.GraphItems
         /// Properties of Vertex
         /// </summary>
         IVertexProperties Properties { get; set; }
+
+        string ToString();
     }
 }
